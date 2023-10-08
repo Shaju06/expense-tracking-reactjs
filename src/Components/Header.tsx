@@ -21,7 +21,6 @@ function Header() {
 
   },[location.pathname])
 
-console.log(location)
 
   return (
     <header
@@ -29,7 +28,7 @@ console.log(location)
     >
         <div className='h-full flex justify-between items-center'>
             <div
-            className='w-full flex justify-center items-center'
+            className='w-full flex justify-center items-center lg:w-1/3 xl:w-1/4'
             >
             <h2
         className='text-2xl font-bold text-sky-800'
