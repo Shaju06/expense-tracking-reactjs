@@ -28,7 +28,7 @@ function Header() {
     >
         <div className='h-full flex justify-between items-center'>
             <div
-            className='w-full flex justify-center items-center lg:w-1/3 xl:w-1/4'
+            className='w-full flex justify-center items-center'
             >
             <h2
         className='text-2xl font-bold text-sky-800'
