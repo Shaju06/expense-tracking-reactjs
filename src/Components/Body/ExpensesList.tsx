@@ -1,5 +1,5 @@
 import React from "react";
-import { Expense, ExpenseTypeEnum } from "./types";
+import { Expense } from "./types";
 import { useMyContextState } from "../../Context";
 import useGroupedExpenses from "../../customhook/useGroupedExpenses";
 
@@ -8,12 +8,7 @@ const ExpensesList = () => {
     const {data} = useMyContextState()
 
     const expenses: Expense[]  = useGroupedExpenses(data.expenses)
-
-    
-
-    console.log(expenses,'expenses')
-
-   
+       
 
 return (
     <div className="mt-4 max-h-96 overflow-y-auto">
