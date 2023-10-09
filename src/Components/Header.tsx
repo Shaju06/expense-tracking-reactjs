@@ -19,7 +19,7 @@ function Header() {
       return "Category List"
     }
 
-  },[location.pathname])
+  },[location])
 
 
   return (
