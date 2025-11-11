@@ -1,6 +1,5 @@
-import React from "react";
-import Footer from "../Footer";
-import { useMyContextState } from "../../Context";
+import { useMyContextState } from "../../context/expenses";
+import Footer from "../footer";
 
 const CategoryList = () => {
 
@@ -10,7 +9,7 @@ const CategoryList = () => {
         <div className="mt-2">
             <div className="mx-3">
             {
-                data.categories.map((catg) => {
+                data.categories.map((catg: any) => {
                  return ( 
                      <p 
                  key={catg.name}

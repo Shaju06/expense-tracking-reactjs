@@ -1,4 +1,4 @@
-import { ExpenseTypeEnum } from "./Components/Body/types"
+import { ExpenseTypeEnum } from "./components/pages/Body/types"
 
 export const dummyData = {
     "categories" :  [

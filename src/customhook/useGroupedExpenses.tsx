@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { Expense, ExpenseTypeEnum } from '../Components/Body/types';
+import { useEffect, useState } from 'react';
+import { Expense, ExpenseTypeEnum } from '../components/pages/Body/types';
 
 const useGroupedExpenses = (expenses: Expense[]) => {
   const [groupedExpenses, setGroupedExpenses] = useState([]);

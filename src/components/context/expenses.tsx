@@ -1,5 +1,5 @@
-import React, { createContext, useContext, ReactNode, FC, Dispatch, SetStateAction } from 'react';
-import {dummyData} from './data'
+import React, { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext } from 'react';
+import { dummyData } from '../../data';
 
 interface Data {
     categories: string[];
@@ -20,7 +20,7 @@ interface ContextProps {
 const ContextState = createContext<ContextProps | undefined>(undefined);
 
 export const ContextStateProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [data, setData] = React.useState<Data>(dummyData);
+  const [data, setData] = React.useState<Data>(dummyData as any);
 
   const contextValue: ContextProps = {
     data,

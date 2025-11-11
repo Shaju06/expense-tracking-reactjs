@@ -1,6 +1,6 @@
-import React from 'react'
-import { useMyContextState } from '../../Context';
-import {useNavigate} from 'react-router-dom'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useMyContextState } from '../../context/expenses';
 
 function AddExpense() {
 
@@ -19,7 +19,7 @@ function AddExpense() {
         }) 
     ),[activeTab])
 
-    const  handleSubmit = (evt) => {
+    const  handleSubmit = (evt: any) => {
         evt.preventDefault()
         const type = activeTab === 1 ? 'Cash In' : 'Cash Out'
         const expenseObj = {
@@ -33,7 +33,7 @@ function AddExpense() {
             amount: parseInt(inputVal),
             description: description,
         }
-        data.expenses.push(expenseObj)
+        data.expenses.push(expenseObj as any)
         setData(data)
         navigate('/')
     }
@@ -53,7 +53,7 @@ function AddExpense() {
         <label className='mb-2 block'>Category</label>
         <select className='w-full h-8 border border-gray-300' value={selectedCatg} onChange={(evt) => setSelectedCatg(evt.target.value)}>
             {
-                data.categories.map((category) => (
+                data.categories.map((category: any) => (
                     <option key={category.name} value={category.name}>{category.name}</option>
                 ))
             }
