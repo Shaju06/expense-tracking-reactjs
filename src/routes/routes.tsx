@@ -1,68 +1,72 @@
-// src/routes.tsx
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
-import { AddExpense, CategoryList, Home } from "../components";
-import { useAuth } from "../components/context/auth-context";
-import Header from "../components/pages/header";
-import LoginPage from "../components/pages/Login/login";
-import ProtectedRoute from "../components/protected-routes";
+import React from 'react';
+import {
+  BrowserRouter,
+  Route,
+  Routes,
+  useLocation,
+} from 'react-router-dom';
+import {
+  AddExpense,
+  CategoryList,
+  Home,
+} from '../components';
+import { useAuth } from '../components/context/auth-context';
+import Header from '../components/layout/header';
+import AddCategory from '../components/pages/Categories/add-categories';
+import Login from '../components/pages/login';
+import ProtectedRoute from '../components/protected-routes';
 
-const AppRoutes = () => {
+const AppRoutesInner: React.FC = () => {
   const location = useLocation();
   const { isAuthenticated } = useAuth();
-
-  const isLoginPage = location.pathname === "/login" && !isAuthenticated;
-
-  console.log("Current Path:", location.pathname,isAuthenticated, isLoginPage, 'fddsfdfd');
+  const hideHeader = location.pathname === '/login';
 
   return (
     <>
-      {isLoginPage ? (
-        <Routes>
-          <Route path="/login" element={<ProtectedRoute><LoginPage /></ProtectedRoute>} />
-        </Routes>
-      ) : (
-        <div className="App container mx-auto ">
-          <div className="border border-sky-400 min-h-screen">
-            {isAuthenticated && <Header />}
-            <Routes>
-              <Route
-                index
-                path="/"
-                element={
-                  <ProtectedRoute>
-                    <Home />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/categories"
-                element={
-                  <ProtectedRoute>
-                    <CategoryList />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/addExpense"
-                element={
-                  <ProtectedRoute>
-                    <AddExpense />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
-          </div>
-        </div>
-      )}
+      {!hideHeader && isAuthenticated && <Header />}
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/add-expense"
+          element={
+            <ProtectedRoute>
+              <AddExpense />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/add-category"
+          element={
+            <ProtectedRoute>
+              <AddCategory />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/categories"
+          element={
+            <ProtectedRoute>
+              <CategoryList />
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
     </>
   );
 };
 
- const ComponentRoutes = () => {
+export default function ComponentRoutes() {
   return (
     <BrowserRouter>
-      <AppRoutes />
+      <AppRoutesInner />
     </BrowserRouter>
   );
-};
-export default ComponentRoutes
+}
