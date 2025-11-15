@@ -20,10 +20,10 @@ export default function Header() {
           to="/"
           className="text-xl font-bold text-brand-light"
         >
-          ExpenseTracker
+          Expense Tracker
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-6 text-white">
           <Link to="/" className="hover:text-brand-light">
             Dashboard
           </Link>

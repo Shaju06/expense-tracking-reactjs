@@ -15,6 +15,7 @@ import { useCategories } from '../../context/category-context';
 import { useExpenses } from '../../context/expense-context';
 import PageWrapper from '../../layout/page-wrapper';
 import Card from '../../ui/card';
+import MonthPicker from '../../ui/month-picker';
 
 const COLORS = [
   '#10B981',
@@ -53,7 +54,6 @@ export default function Dashboard() {
       ).padStart(2, '0')}`;
     });
 
-  // filter by selectedMonth
   const filtered = useMemo(
     () =>
       expenses.filter((e) =>
@@ -70,7 +70,6 @@ export default function Dashboard() {
     .reduce((a, b) => a + b.amount, 0);
   const savings = totalIncome - totalOut;
 
-  // Pie data: aggregate per category name
   const pieData = useMemo(() => {
     const map = new Map<string, number>();
     for (const e of filtered) {
@@ -87,7 +86,6 @@ export default function Dashboard() {
     );
   }, [filtered, categories]);
 
-  // last 6 months bar chart
   const last6 = useMemo(() => {
     const arr: {
       month: string;
@@ -123,22 +121,11 @@ export default function Dashboard() {
   return (
     <PageWrapper>
       <div className="space-y-6">
-        {/* Header row */}
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-          <div className="flex items-center gap-4">
-            <label className="text-sm text-gray-300">
-              Month
-            </label>
-            <input
-              type="month"
-              value={selectedMonth}
-              onChange={(e) =>
-                setSelectedMonth(e.target.value)
-              }
-              className="bg-card-dark border border-border-dark rounded px-3 py-2 text-text-dark"
-            />
-          </div>
+        <div className="w-full">
+          <MonthPicker
+            value={selectedMonth}
+            onChange={(v) => setSelectedMonth(v)}
+          />
         </div>
 
         {/* Summary cards */}
