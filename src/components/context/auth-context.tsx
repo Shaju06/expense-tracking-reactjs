@@ -1,48 +1,82 @@
-// src/context/AuthContext.tsx
-import React, { createContext, ReactNode, useContext, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
 
-interface AuthContextType {
+interface AuthCtx {
   isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  login: (
+    username: string,
+    password: string,
+  ) => Promise<boolean>;
   logout: () => void;
+  user?: { username: string } | null;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthCtx | undefined>(
+  undefined,
+);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+export const AuthProvider: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
+  const [isAuthenticated, setIsAuthenticated] =
+    useState<boolean>(() => {
+      return localStorage.getItem('auth') === 'true';
+    });
+  const [user, setUser] = useState<{
+    username: string;
+  } | null>(() => {
+    const raw = localStorage.getItem('user');
+    return raw ? JSON.parse(raw) : null;
+  });
 
-  const login = async (username: string, password: string) => {
-    // you can replace this with API call or NextAuth later
-    if (username === "admin" && password === "1234") {
-      localStorage.setItem("auth", "true");
+  useEffect(() => {
+    if (isAuthenticated)
+      localStorage.setItem('auth', 'true');
+    else localStorage.removeItem('auth');
+  }, [isAuthenticated]);
+
+  const login = async (
+    username: string,
+    password: string,
+  ) => {
+    // Mock auth: admin / 1234 — replace with API later
+    if (username === 'admin' && password === '1234') {
       setIsAuthenticated(true);
-    } else {
-      alert("Invalid credentials");
+      setUser({ username });
+      localStorage.setItem(
+        'user',
+        JSON.stringify({ username }),
+      );
+      return true;
     }
+    return false;
   };
 
   const logout = () => {
-    localStorage.removeItem("auth");
     setIsAuthenticated(false);
+    setUser(null);
+    localStorage.removeItem('auth');
+    localStorage.removeItem('user');
   };
 
-  React.useEffect(() => {
-    const auth = localStorage.getItem("auth");
-    if (auth === "true") {
-      setIsAuthenticated(true);
-    }
-  }, []);
-
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, login, logout, user }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within AuthProvider");
-  return context;
+export const useAuth = (): AuthCtx => {
+  const ctx = useContext(AuthContext);
+  if (!ctx)
+    throw new Error(
+      'useAuth must be used within AuthProvider',
+    );
+  return ctx;
 };

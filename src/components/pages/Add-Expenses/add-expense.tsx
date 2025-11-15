@@ -1,98 +1,149 @@
-import React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { useMyContextState } from '../../context/expenses';
+import Button from '../..//ui/button';
+import Card from '../..//ui/card';
+import Input from '../..//ui/input';
+import { useCategories } from '../../context/category-context';
+import { useExpenses } from '../../context/expense-context';
+import PageWrapper from '../../layout/page-wrapper';
+import Textarea from '../../ui/textarea';
+import {
+  ExpenseFormType,
+  expenseSchema,
+} from '../../validations/expense-schema';
 
-function AddExpense() {
+export default function AddExpense() {
+  const { categories } = useCategories();
+  const { addExpense } = useExpenses();
+  const navigate = useNavigate();
 
-    const [activeTab, setActiveTab] = React.useState(1)
-    const [inputVal, setInputVal] = React.useState('')
-    const [selectedCatg, setSelectedCatg] = React.useState('Food')
-    const [description, setDescription] = React.useState('')
-    const today = new Date().toISOString().split('T')[0];
-    const {data, setData} = useMyContextState()
-    const navigate = useNavigate()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<ExpenseFormType>({
+    resolver: zodResolver(expenseSchema),
+    defaultValues: {
+      categoryId: categories[0]?.id ?? '',
+      type: 'out',
+      amount: 0,
+      date: new Date().toISOString().slice(0, 10),
+      description: '',
+    },
+  });
 
-    const TabLayout = React.useMemo(() => (
-        ['Cash in',"Cash out"].map((data, index) => {
-            const bgColor = index + 1 === activeTab ? 'bg-sky-400' : 'bg-sky-200'
-            return  <button key={data} onClick={() => setActiveTab(index+1)} className={`w-1/2  ${bgColor}`}>{data}</button>
-        }) 
-    ),[activeTab])
-
-    const  handleSubmit = (evt: any) => {
-        evt.preventDefault()
-        const type = activeTab === 1 ? 'Cash In' : 'Cash Out'
-        const expenseObj = {
-            type,
-            category: {
-                name: selectedCatg.toString(),
-                isMain: true,
-                order: 1,
-            },
-            date: new Date(today),
-            amount: parseInt(inputVal),
-            description: description,
-        }
-        data.expenses.push(expenseObj as any)
-        setData(data)
-        navigate('/')
-    }
-
+  const onSubmit = (data: ExpenseFormType) => {
+    addExpense(data);
+    reset();
+    navigate('/');
+  };
 
   return (
-    <div
-    className='mx-auto  mt-6'
-    >
-        <h2 className='text-2xl px-10'>Type</h2>
-        <div className='w-full px-10 flex h-10 mt-3'>
-           { TabLayout}
-        </div>
-<div className='form mt-2 px-10'>
-<form >
-    <div className='mb-4'>
-        <label className='mb-2 block'>Category</label>
-        <select className='w-full h-8 border border-gray-300' value={selectedCatg} onChange={(evt) => setSelectedCatg(evt.target.value)}>
-            {
-                data.categories.map((category: any) => (
-                    <option key={category.name} value={category.name}>{category.name}</option>
-                ))
-            }
-        </select>
-    </div>
-    <div className='mb-4'>
-        <label className='mb-2 block'>Amount</label>
-        <input 
-        type="number"
-        className='w-full border border-gray-400'
-        value={inputVal}
-        onChange={(evt) => {
-            setInputVal(evt.target.value)
-        }}
-        required
-          />
-    </div>
-    <div className='mb-4'>
-        <label className='mb-2 block'>Date</label>
-       <input
-       type="date"
-       className='w-full h-8 border border-gray-300'
-       value={today}
-       readOnly  />
-    </div>
-    <div className='mb-4'>
-        <label className='mb-2 block'>Description</label>
-       <textarea rows={6} value={description} onChange={(evt)=> setDescription(evt.target.value)} cols={4} className='w-full h-8 border border-gray-300' />
-    </div>
-</form>
-</div>
-<footer>
-    <div className='w-full flex px-1 py-1 h-12'>
-<button className='w-1/2 border border-sky-400' onClick={()=> navigate('/')}>Cancel</button>
-<button type='submit' onClick={handleSubmit} className='w-1/2 bg-sky-400'>Add</button>
-    </div>
-</footer>
-    </div>
-  )
-}
+    <PageWrapper>
+      <Card className="max-w-xl mx-auto">
+        <h2 className="text-2xl font-semibold mb-4">
+          Add Expense
+        </h2>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
+          <div>
+            <label className="block text-sm mb-1">
+              Category
+            </label>
+            <select
+              {...register('categoryId')}
+              className="w-full rounded-md px-3 py-2 bg-surface-dark border border-border-dark"
+            >
+              <option value="">Select category</option>
+              {categories.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+            {errors.categoryId && (
+              <p className="text-red-400 text-sm mt-1">
+                {errors.categoryId.message}
+              </p>
+            )}
+          </div>
 
-export default AddExpense
+          <div>
+            <label className="block text-sm mb-1">
+              Type
+            </label>
+            <div className="flex gap-4">
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  value="in"
+                  {...register('type')}
+                />
+                <span>Cash In</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <input
+                  type="radio"
+                  value="out"
+                  {...register('type')}
+                />
+                <span>Cash Out</span>
+              </label>
+            </div>
+            {errors.type && (
+              <p className="text-red-400 text-sm mt-1">
+                {errors.type.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm mb-1">
+              Amount
+            </label>
+            <Input
+              type="number"
+              step="0.01"
+              {...register('amount', {
+                valueAsNumber: true,
+              })}
+            />
+            {errors.amount && (
+              <p className="text-red-400 text-sm mt-1">
+                {errors.amount.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm mb-1">
+              Date
+            </label>
+            <Input type="date" {...register('date')} />
+            {errors.date && (
+              <p className="text-red-400 text-sm mt-1">
+                {errors.date.message}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm mb-1">
+              Description
+            </label>
+            <Textarea
+              {...register('description')}
+              rows={3}
+            />
+          </div>
+
+          <Button type="submit">Save Expense</Button>
+        </form>
+      </Card>
+    </PageWrapper>
+  );
+}
