@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
+import { AuthAPI } from '../../../api/auth';
 
 interface AuthCtx {
   isAuthenticated: boolean;
@@ -39,20 +40,24 @@ export const AuthProvider: React.FC<{
     else localStorage.removeItem('auth');
   }, [isAuthenticated]);
 
-  const login = async (
-    username: string,
-    password: string,
-  ) => {
-    // Mock auth: admin / 1234 — replace with API later
-    if (username === 'admin' && password === '1234') {
-      setIsAuthenticated(true);
-      setUser({ username });
-      localStorage.setItem(
-        'user',
-        JSON.stringify({ username }),
-      );
-      return true;
+  const login = async (email: string, password: string) => {
+    try {
+      const data = await AuthAPI.login(email, password);
+      console.log('Login successful', data);
+    } catch (err) {
+      console.error('Login error', err);
+      return false;
     }
+    // Mock auth: admin / 1234 — replace with API later
+    // if (username === 'admin' && password === '1234') {
+    //   setIsAuthenticated(true);
+    //   setUser({ username });
+    //   localStorage.setItem(
+    //     'user',
+    //     JSON.stringify({ username }),
+    //   );
+    //   return true;
+    // }
     return false;
   };
 

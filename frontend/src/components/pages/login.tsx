@@ -9,7 +9,7 @@ export default function Login() {
   const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
@@ -19,7 +19,7 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = await login(username, password);
+    const ok = await login(email, password);
 
     if (!ok) {
       setError('Invalid credentials (use admin / 1234)');
@@ -41,13 +41,11 @@ export default function Login() {
             className="space-y-4"
           >
             <div>
-              <label className="text-sm">Username</label>
+              <label className="text-sm">Email</label>
               <Input
-                value={username}
-                onChange={(e) =>
-                  setUsername(e.target.value)
-                }
-                placeholder="admin"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="email"
               />
             </div>
 
