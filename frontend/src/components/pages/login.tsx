@@ -6,23 +6,26 @@ import Button from '../ui/button';
 import Input from '../ui/input';
 
 export default function Login() {
-  const { login, isAuthenticated } = useAuth();
+  const { login, user } = useAuth();
   const navigate = useNavigate();
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (isAuthenticated) navigate('/');
-  }, [isAuthenticated, navigate]);
+    if (user) navigate('/');
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const ok = await login(email, password);
-
-    if (!ok) {
-      setError('Invalid credentials (use admin / 1234)');
+    try {
+      await login(email, password);
+      navigate('/', { replace: true });
+    } catch (err: any) {
+      alert(err.message || 'Login failed');
+    } finally {
+      setBusy(false);
     }
   };
 
@@ -61,13 +64,10 @@ export default function Login() {
               />
             </div>
 
-            {error && (
-              <p className="text-red-400 text-sm">
-                {error}
-              </p>
-            )}
-
-            <Button type="submit">Login</Button>
+            <Button type="submit" disabled={busy}>
+              {' '}
+              {busy ? 'Signing in...' : 'Sign in'}
+            </Button>
           </form>
         </div>
       </div>

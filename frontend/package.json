@@ -1,6 +1,7 @@
 {
   "name": "expense-tracking",
   "version": "0.1.0",
+  "proxy": "http://localhost:4000/api",
   "private": true,
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

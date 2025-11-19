@@ -1,0 +1,61 @@
+services:
+  db:
+    image: postgres:16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-expense_app}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - prodnet
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    env_file:
+      - ./backend/.env.prod # production env (create this)
+    depends_on:
+      - db
+    networks:
+      - prodnet
+    ports:
+      - "4000:4000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args:
+        # set API base url for frontend build
+        REACT_APP_API_URL: ${REACT_APP_API_URL:-http://localhost:4000}
+    depends_on:
+      - backend
+    networks:
+      - prodnet
+    ports:
+      - "80:80" # serve app on host:80
+
+  # One-off migration job (run manually or add to CI)
+  migrate:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    entrypoint: ["npx", "prisma", "migrate", "deploy"]
+    env_file:
+      - ./backend/.env.prod
+    depends_on:
+      - db
+    networks:
+      - prodnet
+
+volumes:
+  db-data:
+
+networks:
+  prodnet:
+    driver: bridge
