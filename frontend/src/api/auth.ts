@@ -1,5 +1,7 @@
 import { apiFetch } from '../lib/api';
 
+const API_BASE = process.env.REACT_APP_API_URL || '/api';
+
 export const AuthAPI = {
   login: (email: string, password: string) =>
     apiFetch('/auth/login', {

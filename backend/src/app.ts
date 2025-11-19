@@ -7,6 +7,9 @@ import expenseRoutes from './routes/expense.routes';
 
 const app = express();
 
+// addable prefix (can be moved to env if desired)
+const API_PREFIX = process.env.API_PREFIX || '/api';
+
 const FRONTEND_ORIGIN =
   process.env.FRONTEND_ORIGIN || 'http://localhost:3000';
 
@@ -19,10 +22,20 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-app.use('/auth', authRoutes);
-app.use('/categories', categoryRoutes);
-app.use('/expenses', expenseRoutes);
+// create a single router that holds all route mounts (no need to change individual route files)
+const apiRouter = express.Router();
 
-app.get('/', (req, res) => res.json({ ok: true }));
+// mount existing route modules on the apiRouter using their current subpaths
+apiRouter.use('/auth', authRoutes);
+apiRouter.use('/categories', categoryRoutes);
+apiRouter.use('/expenses', expenseRoutes);
+apiRouter.get('/health', (req, res) => {
+  console.log('Health check');
+  res.json({ ok: true });
+});
+apiRouter.get('/', (req, res) => res.json({ ok: true }));
+
+// mount the entire apiRouter under the API prefix
+app.use(API_PREFIX, apiRouter);
 
 export default app;

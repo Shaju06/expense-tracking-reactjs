@@ -1,21 +1,41 @@
 const API_BASE = process.env.REACT_APP_API_URL || '/api';
 
+export function buildUrl(path: string) {
+  // If an absolute URL is provided, use it directly
+  if (/^https?:\/\//i.test(path)) return path;
+  // Ensure proper joining of base and path
+  if (!path.startsWith('/')) path = `/${path}`;
+  return `${API_BASE}${path}`;
+}
+
+/**
+ * Basic fetch wrapper - does not attach auth.
+ */
 export async function apiFetch(
   path: string,
-  options: RequestInit = {},
+  opts: RequestInit = {},
 ) {
-  const res = await fetch(API_BASE + path, {
+  const url = buildUrl(path);
+  const finalOptions: RequestInit = {
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
-      ...(options.headers || {}),
+      ...(opts.headers || {}),
     },
-    ...options,
-  });
+    ...opts,
+  };
 
-  if (!res.ok) {
-    const errorText = await res.text();
-    throw new Error(errorText || 'API error');
+  const res = await fetch(url, finalOptions);
+  const text = await res.text();
+  let data;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    data = text;
   }
-
-  return res.json();
+  if (!res.ok) {
+    // preserve existing error handling pattern if different
+    throw data || new Error(res.statusText);
+  }
+  return data;
 }
