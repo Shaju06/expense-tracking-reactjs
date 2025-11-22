@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { useCategories } from '../../context/category-context';
+import { useCreateCategory } from '../../../api/categories';
 import PageWrapper from '../../layout/page-wrapper';
 import Button from '../../ui/button';
 import Card from '../../ui/card';
@@ -13,26 +14,28 @@ import {
 } from '../../validations/category-schema';
 
 export default function AddCategory() {
-  const { addCategory } = useCategories();
+  const createCategory = useCreateCategory();
   const navigate = useNavigate();
+  const [error, setError] = useState('');
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     reset,
   } = useForm<CategoryFormType>({
     resolver: zodResolver(categorySchema),
-    defaultValues: {
-      name: '',
-      color: '#6366F1',
-      description: '',
-    },
   });
 
   const onSubmit = (data: CategoryFormType) => {
-    addCategory(data);
-    reset();
-    navigate('/categories');
+    // addCategory(data);
+    setError('');
+    createCategory.mutate(data, {
+      onSuccess: () => {
+        reset();
+        navigate('/categories');
+      },
+      onError: (e: any) => setError(e.message),
+    });
   };
 
   return (
@@ -41,6 +44,11 @@ export default function AddCategory() {
         <h2 className="text-2xl font-semibold mb-4">
           Add Category
         </h2>
+        {error && (
+          <p className="bg-red-600 text-white p-2 rounded mb-2 text-sm">
+            {error}
+          </p>
+        )}
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4"
@@ -83,7 +91,9 @@ export default function AddCategory() {
             />
           </div>
 
-          <Button type="submit">Add Category</Button>
+          <Button disabled={isSubmitting} type="submit">
+            {isSubmitting ? 'Saving...' : 'Add Category'}
+          </Button>
         </form>
       </Card>
     </PageWrapper>

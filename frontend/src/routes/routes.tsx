@@ -18,12 +18,12 @@ import ProtectedRoute from '../components/protected-routes';
 
 const AppRoutesInner: React.FC = () => {
   const location = useLocation();
-  const { isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const hideHeader = location.pathname === '/login';
 
   return (
     <>
-      {!hideHeader && isAuthenticated && <Header />}
+      {!hideHeader && user && <Header />}
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route

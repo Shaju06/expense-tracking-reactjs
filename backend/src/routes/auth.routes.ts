@@ -96,7 +96,7 @@ router.post('/login', async (req, res) => {
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });
 
-  res.json({ accessToken });
+  res.json({ accessToken, refreshToken, user: true });
 });
 
 /**

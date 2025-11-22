@@ -16,7 +16,7 @@ type User = {
 
 type AuthState = {
   user: User | null;
-  accessToken: string | null; // kept in memory for security
+  accessToken: string | null;
   loading: boolean;
 };
 
@@ -152,7 +152,7 @@ export const AuthProvider: React.FC<{
 
     const p = (async () => {
       try {
-        const res = await apiFetch('/auth/refresh', {
+        const res = await apiFetch('/api/auth/refresh', {
           method: 'POST',
           body: JSON.stringify({ token: refreshToken }),
         });
@@ -187,8 +187,6 @@ export const AuthProvider: React.FC<{
       method: 'POST',
       body: JSON.stringify({ email, password }),
     });
-    console.log('Login response:', res);
-    // expected: { user, accessToken, refreshToken }
     const { user, accessToken, refreshToken } = res as {
       user: User;
       accessToken: string;
@@ -207,7 +205,7 @@ export const AuthProvider: React.FC<{
     password: string;
     name?: string;
   }) {
-    const res = await plainFetch('/auth/register', {
+    const res = await apiFetch('/auth/register', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
@@ -229,7 +227,7 @@ export const AuthProvider: React.FC<{
     const refreshToken = localStorage.getItem(REFRESH_KEY);
     try {
       if (refreshToken) {
-        await apiFetch('/auth/logout', {
+        await apiFetch('/api/auth/logout', {
           method: 'POST',
           body: JSON.stringify({ token: refreshToken }),
         });
@@ -263,7 +261,6 @@ export const AuthProvider: React.FC<{
     input: RequestInfo,
     init?: RequestInit,
   ) {
-    // prepare request
     const url =
       typeof input === 'string'
         ? input
@@ -272,12 +269,18 @@ export const AuthProvider: React.FC<{
       ? url
       : buildUrl((url as string) || '');
     const attempt = async (accessToken?: string | null) => {
-      const headers: HeadersInit = {
-        'Content-Type': 'application/json',
-        ...(init?.headers || {}),
-      };
-      if (accessToken)
-        headers['Authorization'] = `Bearer ${accessToken}`;
+      const headers = new Headers(
+        init?.headers as HeadersInit,
+      );
+      if (!headers.has('Content-Type')) {
+        headers.set('Content-Type', 'application/json');
+      }
+      if (accessToken) {
+        headers.set(
+          'Authorization',
+          `Bearer ${accessToken}`,
+        );
+      }
       const res = await fetch(path, {
         ...init,
         headers,
