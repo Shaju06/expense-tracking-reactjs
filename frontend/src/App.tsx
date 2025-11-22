@@ -1,19 +1,22 @@
+import {
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query';
+
 import { AuthProvider } from './components/context/auth-context';
-import { CategoryProvider } from './components/context/category-context';
-import { ExpenseProvider } from './components/context/expense-context';
 import ComponentRoutes from './routes/routes';
 
 function App() {
+  const client = new QueryClient();
+
   return (
     <div className="dark">
       <div className="dark">
-        <AuthProvider>
-          <CategoryProvider>
-            <ExpenseProvider>
-              <ComponentRoutes />
-            </ExpenseProvider>
-          </CategoryProvider>
-        </AuthProvider>
+        <QueryClientProvider client={client}>
+          <AuthProvider>
+            <ComponentRoutes />
+          </AuthProvider>
+        </QueryClientProvider>
       </div>
     </div>
   );

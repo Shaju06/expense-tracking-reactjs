@@ -4,6 +4,7 @@ import express from 'express';
 import authRoutes from './routes/auth.routes';
 import categoryRoutes from './routes/category.routes';
 import expenseRoutes from './routes/expense.routes';
+import summaryRoutes from './routes/summary.routes';
 
 const app = express();
 
@@ -29,11 +30,12 @@ const apiRouter = express.Router();
 apiRouter.use('/auth', authRoutes);
 apiRouter.use('/categories', categoryRoutes);
 apiRouter.use('/expenses', expenseRoutes);
+apiRouter.use('/summary', summaryRoutes);
+
 apiRouter.get('/health', (req, res) => {
-  console.log('Health check');
   res.json({ ok: true });
 });
-apiRouter.get('/', (req, res) => res.json({ ok: true }));
+
 
 // mount the entire apiRouter under the API prefix
 app.use(API_PREFIX, apiRouter);

@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import { useCategories } from '../../context/category-context';
+import { useNavigate } from 'react-router-dom';
+import {
+  useCategories,
+  useDeleteCategory,
+} from '../../../api/categories';
 import PageWrapper from '../../layout/page-wrapper';
 import Button from '../../ui/button';
 import Card from '../../ui/card';
@@ -8,13 +12,17 @@ import DeleteCategoryConfirm from './delete-category-confirm';
 import EditCategoryForm from './edit-category';
 
 export default function CategoryList() {
-  const { categories, deleteCategory, updateCategory } =
-    useCategories();
+  const { data: categories, isLoading } = useCategories();
+  const deleteCategory = useDeleteCategory();
+  const navigate = useNavigate();
 
   const [editOpen, setEditOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
 
   const [selected, setSelected] = useState<any>(null);
+
+  if (isLoading)
+    return <p className="p-6 text-gray-400">Loading...</p>;
 
   const openEdit = (cat: any) => {
     setSelected(cat);
@@ -26,14 +34,12 @@ export default function CategoryList() {
     setDeleteOpen(true);
   };
 
-  const handleUpdate = (data: any) => {
-    updateCategory(selected.id, data);
-    setEditOpen(false);
-  };
-
   const handleDelete = () => {
-    deleteCategory(selected.id);
-    setDeleteOpen(false);
+    deleteCategory.mutate(selected.id, {
+      onSuccess: () => {
+        setDeleteOpen(false);
+      },
+    });
   };
 
   return (
@@ -43,9 +49,9 @@ export default function CategoryList() {
           Categories
         </h1>
         <Button
-          onClick={() =>
-            (window.location.href = '/add-category')
-          }
+          onClick={() => {
+            navigate('/add-category');
+          }}
         >
           Add Category
         </Button>
@@ -68,7 +74,7 @@ export default function CategoryList() {
             </thead>
 
             <tbody>
-              {categories.map((cat) => (
+              {categories.map((cat: any) => (
                 <tr
                   key={cat.id}
                   className="border-t border-border-dark hover:bg-gray-900/20"
@@ -114,12 +120,8 @@ export default function CategoryList() {
         onClose={() => setEditOpen(false)}
       >
         <EditCategoryForm
-          defaultValues={{
-            name: selected?.name || '',
-            color: selected?.color || '#6366F1',
-            description: selected?.description || '',
-          }}
-          onSubmit={handleUpdate}
+          category={selected}
+          setEditOpen={setEditOpen}
         />
       </Modal>
 

@@ -1,12 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
-import { useCategories } from '../../context/category-context';
-import { useExpenses } from '../../context/expense-context';
+import { useCategories } from '../../../api/categories';
+import { useCreateExpense } from '../../../api/expenses';
 import PageWrapper from '../../layout/page-wrapper';
 import Button from '../../ui/button';
 import Card from '../../ui/card';
-import DatePicker from '../../ui/date-picker';
 import Input from '../../ui/input';
 import Textarea from '../../ui/textarea';
 import {
@@ -15,30 +15,26 @@ import {
 } from '../../validations/expense-schema';
 
 export default function AddExpense() {
-  const { categories } = useCategories();
-  const { addExpense } = useExpenses();
+  const { data: categories } = useCategories();
+  const createExpense = useCreateExpense();
+  const [error, setError] = useState('');
+
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<ExpenseFormType>({
     resolver: zodResolver(expenseSchema),
-    defaultValues: {
-      categoryId: '',
-      type: 'out',
-      amount: 0,
-      date: new Date().toISOString().slice(0, 10),
-      description: '',
-    },
   });
 
   const onSubmit = (data: ExpenseFormType) => {
-    addExpense(data);
-    navigate('/');
+    setError('');
+    createExpense.mutate(data, {
+      onSuccess: () => navigate('/'),
+      onError: (e: any) => setError(e.message),
+    });
   };
 
   return (
@@ -47,7 +43,11 @@ export default function AddExpense() {
         <h2 className="text-2xl font-semibold mb-4">
           Add Expense
         </h2>
-
+        {error && (
+          <p className="bg-red-600 p-2 rounded text-sm mb-2">
+            {error}
+          </p>
+        )}
         <form
           onSubmit={handleSubmit(onSubmit)}
           className="space-y-4"
@@ -61,7 +61,7 @@ export default function AddExpense() {
               className="w-full px-3 py-2 rounded-md bg-surface-dark border border-border-dark"
             >
               <option value="">Select category</option>
-              {categories.map((c) => (
+              {categories.map((c: any) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
                 </option>
@@ -115,14 +115,10 @@ export default function AddExpense() {
               Date
             </label>
 
-            <DatePicker
-              value={watch('date')}
-              onChange={(val) =>
-                setValue('date', val, {
-                  shouldValidate: true,
-                })
-              }
-              name="date"
+            <input
+              {...register('date')}
+              type="date"
+              className="w-full p-2 bg-gray-700 border border-gray-600 rounded"
             />
 
             {errors.date && (
@@ -142,7 +138,10 @@ export default function AddExpense() {
             />
           </div>
 
-          <Button type="submit">Save Expense</Button>
+          <Button disabled={isSubmitting} type="submit">
+            {' '}
+            {isSubmitting ? 'Saving...' : 'Add Expense'}
+          </Button>
         </form>
       </Card>
     </PageWrapper>
