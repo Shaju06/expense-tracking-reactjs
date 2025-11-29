@@ -16,7 +16,8 @@ const RecentTransaction: React.FC = () => {
         <p className="text-gray-400">Loading...</p>
       )}
 
-      {!isLoading && (!data || data?.length === 0) ? (
+      {!isLoading &&
+      (!data || (data?.length === 0 && !categories)) ? (
         <div className="text-center text-gray-400 py-8">
           No transactions for this month.
         </div>

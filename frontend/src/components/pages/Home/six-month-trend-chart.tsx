@@ -11,11 +11,22 @@ import {
 import { useLastSixSummary } from '../../../api/useLastSixSummary';
 import Card from '../../ui/card';
 
-const SixMonthTrendChart: React.FC = ({}) => {
-  const { data: last6 } = useLastSixSummary();
+const SixMonthTrendChart: React.FC = () => {
+  const { data: last6, isLoading } = useLastSixSummary();
+
+  if (isLoading) {
+    return (
+      <Card>
+        <h3 className="font-semibold mb-4">
+          Last 6 Months
+        </h3>
+        <p className="text-gray-400">Loading...</p>
+      </Card>
+    );
+  }
 
   return (
-    <Card>
+    <>
       <h3 className="font-semibold mb-4">Last 6 Months</h3>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
@@ -29,7 +40,7 @@ const SixMonthTrendChart: React.FC = ({}) => {
           </BarChart>
         </ResponsiveContainer>
       </div>
-    </Card>
+    </>
   );
 };
 
