@@ -23,9 +23,8 @@ log/
 .DS_Store
 Thumbs.db
 
-# Prisma
-backend/prisma/dev.db
-backend/prisma/migrations/
+
+
 
 # Editor / IDE
 .vscode/
