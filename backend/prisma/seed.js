@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 async function main() {
@@ -7,13 +7,11 @@ async function main() {
     update: {},
     create: {
       email: 'test@example.com',
-      passwordHash:
-        '$2a$10$B1jwrS38/IXRSR1j.PZKTuTvgc1XtpMoH68B5E.2E9X16XQvk3xyi',
+      passwordHash: 'dummy-hash',
       name: 'Test User',
     },
   });
 
-  // Create some categories
   await prisma.category.createMany({
     data: [
       { name: 'Food', color: '#ff6384', userId: user.id },
@@ -35,7 +33,5 @@ async function main() {
 }
 
 main()
-  .catch((e) => console.error(e))
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+  .catch(console.error)
+  .finally(() => prisma.$disconnect());
