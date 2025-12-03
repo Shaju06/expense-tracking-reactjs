@@ -18,8 +18,7 @@ FROM nginx:stable-alpine
 ENV BACKEND_URL=""
 
 COPY --from=build /app/build /usr/share/nginx/html
-COPY ./nginx/nginx.conf.template /etc/nginx/conf.d/default.conf.template
+COPY ./nginx/nginx.conf.template /etc/nginx/conf.d/default.conf
 
-CMD sh -c 'envsubst "${BACKEND_URL}" \
-    < /etc/nginx/conf.d/default.conf.template \
-    > /etc/nginx/conf.d/default.conf && exec nginx -g "daemon off;"'
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
