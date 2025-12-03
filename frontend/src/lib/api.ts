@@ -16,13 +16,7 @@ export async function apiFetch(
   opts: RequestInit = {},
 ) {
   const url = buildUrl(path);
-  console.log(
-    'API Fetch URL:',
-    url,
-    path,
-    process.env.REACT_APP_API_URL,
-    'opts',
-  );
+
   const finalOptions: RequestInit = {
     credentials: 'include',
     headers: {

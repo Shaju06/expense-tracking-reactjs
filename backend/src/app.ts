@@ -8,11 +8,13 @@ import summaryRoutes from './routes/summary.routes';
 
 const app = express();
 
-// addable prefix (can be moved to env if desired)
+
 const API_PREFIX = process.env.API_PREFIX || '/api';
 
 const FRONTEND_ORIGIN =
   process.env.FRONTEND_ORIGIN || 'http://localhost:3000';
+
+app.options('*', cors());
 
 app.use(
   cors({
