@@ -10,8 +10,11 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
+
+# ------------ RUNTIME ------------
 FROM nginx:stable-alpine
 
+# Export env var without value (Railway will override it)
 ENV BACKEND_URL=""
 
 COPY --from=build /app/build /usr/share/nginx/html
@@ -19,5 +22,4 @@ COPY ./nginx/nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
 CMD sh -c 'envsubst "${BACKEND_URL}" \
     < /etc/nginx/conf.d/default.conf.template \
-    > /etc/nginx/conf.d/default.conf \
-    && nginx -g "daemon off;"'
+    > /etc/nginx/conf.d/default.conf && exec nginx -g "daemon off;"'
