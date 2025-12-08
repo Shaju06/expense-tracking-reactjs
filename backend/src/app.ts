@@ -7,19 +7,20 @@ import expenseRoutes from './routes/expense.routes';
 import summaryRoutes from './routes/summary.routes';
 
 const app = express();
-app.set('trust proxy', 1);
 
 const API_PREFIX = process.env.API_PREFIX || '/api';
-app.use((req, res, next) => {
-  console.log('Origin:', req.headers.origin);
-  next();
-});
+
 const FRONTEND_ORIGIN =
   (process.env.FRONTEND_ORIGIN || '')
     .trim()
     .replace(/\/$/, '') || 'http://localhost:3000';
 
-app.options('*', cors());
+    app.set('trust proxy', 1);
+
+    app.use((req, res, next) => {
+      console.log('Origin:', req.headers.origin);
+      next();
+    });
 
 app.use(
   cors({
