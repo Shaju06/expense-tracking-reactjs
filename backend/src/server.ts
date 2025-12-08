@@ -4,7 +4,7 @@ import { prisma } from './primsa';
 const PORT = Number(process.env.PORT || 4000);
 
 async function main() {
-  app.listen(4000, () => {
+  app.listen(PORT, () => {
     console.log(`Server listening on ${PORT}`);
   });
 }
