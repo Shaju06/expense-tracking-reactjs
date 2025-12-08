@@ -7,7 +7,7 @@ import expenseRoutes from './routes/expense.routes';
 import summaryRoutes from './routes/summary.routes';
 
 const app = express();
-
+app.set('trust proxy', 1);
 
 const API_PREFIX = process.env.API_PREFIX || '/api';
 
