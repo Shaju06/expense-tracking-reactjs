@@ -12,7 +12,9 @@ const app = express();
 const API_PREFIX = process.env.API_PREFIX || '/api';
 
 const FRONTEND_ORIGIN =
-  process.env.FRONTEND_ORIGIN || 'http://localhost:3000';
+  (process.env.FRONTEND_ORIGIN || '')
+    .trim()
+    .replace(/\/$/, '') || 'http://localhost:3000';
 
 app.options('*', cors());
 
