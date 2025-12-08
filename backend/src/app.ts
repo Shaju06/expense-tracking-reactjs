@@ -10,7 +10,10 @@ const app = express();
 app.set('trust proxy', 1);
 
 const API_PREFIX = process.env.API_PREFIX || '/api';
-
+app.use((req, res, next) => {
+  console.log('Origin:', req.headers.origin);
+  next();
+});
 const FRONTEND_ORIGIN =
   (process.env.FRONTEND_ORIGIN || '')
     .trim()
