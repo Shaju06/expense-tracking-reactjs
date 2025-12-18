@@ -1,46 +1,88 @@
-#  Expense Manager App Using Reactjs
+#  FinTrack — Full-Stack Expense Tracking App
 
-Expense Manager is a simple and intuitive app designed to help you manage your expenses effortlessly. Easily keep track of your spending, view your expenses grouped by months, and add new expenses on the go.
+A modern full-stack expense tracking application built with React + TypeScript, Express + Prisma + PostgreSQL, fully containerized using Docker, and deployed on Railway.
 
-## Key Features
+FinTrack includes secure authentication, expense insights, categories, interactive charts, and a smooth UI with dark-mode–first design.
 
-- **Expense Tracking:** Keep track of your daily expenses and monitor your spending habits.
-- **Monthly Expense Summary:** View your expenses grouped by months for a clear overview of your financial activities.
-- **Add New Expenses:** Quickly add new expenses with details like amount, category, and description.
-- **User-Friendly Interface:** Intuitive design for easy navigation and a seamless user experience.
+# Key Features
 
-## How to Use
+  ### Authentication
 
-1. **View Expenses:** On the main dashboard, you'll see your expenses grouped by months. Click on a specific month to view the detailed expense list for that month.
-2. **Add New Expense:** To add a new expense, click the "Add Expense" button. Enter the necessary details such as the amount, category, and description. Save the expense to see it reflected in the monthly summary.
-3. **Edit or Delete Expenses:** Need to make changes? You can edit or delete existing expenses to keep your records accurate.
+- Login with JWT (access + refresh tokens).
+- HttpOnly secure cookie storage.
+- Fully protected API routes
 
-## Technologies Used
+###  Expense Tracking
+-	Add Cash-In or Cash-Out
+-	Category, amount, date, notes
+-	Edit or delete categories
+-	Recent transactions list
+  
+  ### Dashboard & Insights
+-	6-Month Trend Bar Chart
+-	Category Breakdown Donut Chart
+-	Monthly summary: Total In, Total Out, Net Balance
+-	“No Data” fallbacks for new users
 
-- **Frontend:** HTML, CSS,TailwindCss JavaScript
-- **Framework:** React.js
+### Frontend UI
+-	Fully responsive dark UI (TailwindCSS)
+-	Clean cards, charts, and forms
+-	React Hook Form + Zod validations
+
+### Backend
+-	Express.js REST API
+-	Prisma ORM + PostgreSQL
+-	Cookie-based authentication
+-	Secure CORS setup for Railway
+
+### DevOps / Deployment
+-	Fully Dockerized (frontend + backend)
+-	NGINX serving React build
+-	Railway for hosting + DB
+-	Prisma migrations + seeders
+
+## Project Structure
+```bash    /
+├── frontend/              # React + TypeScript + Tailwind + NGINX
+│   ├── src/
+│   ├── package.json
+│   └── Dockerfile.prod
+│
+├── backend/               # Express + Prisma + JWT
+│   ├── src/
+│   ├── prisma/schema.prisma
+│   ├── Dockerfile.prod
+│   └── package.json
+│
+└── docker-compose.yml     # Local development environment
+
+```
+
+# How to Use the App
+1.	Login using your email + password
+2.	Explore the Dashboard with monthly summaries and charts
+3.	Add a new Expense with category, amount, date, etc.
+4.	Manage Categories (create/edit/delete)
+5.	Browse Recent Transactions or filter by month
+
+# Running Locally (Development)
+```bash
+docker compose up -d db
+npm run dev  //frontend/backend
+
+```
 
 
-### `npm start`
+## Running with Docker (Production Mode)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Backend
+```
+docker build -t expense-backend ./backend
+docker run -p 4000:4000 expense-backend
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
+### Frotend
+```
+docker build -t expense-frontend ./frontend
+docker run -p 80:80 expense-frontend
+```
